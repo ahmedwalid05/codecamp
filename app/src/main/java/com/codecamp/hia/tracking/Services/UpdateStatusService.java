@@ -4,6 +4,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -114,13 +116,21 @@ public class UpdateStatusService extends Service {
             case 1:
                 notificationMSG = "plane landed";
                 break;
+            case 2:
+                notificationMSG = "Immigration Passed";
+                break;
             case 3:
                 notificationMSG = "bags collected"; //todo add and modify so that the switch matches all the cases
         }
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
-        notificationBuilder.setContentTitle("Notification"); //todo change this to a suitable title
+        notificationBuilder.setContentTitle("HIA Arrivals Notification"); //todo change this to a suitable title
         notificationBuilder.setContentText(notificationMSG);
+
         notificationBuilder.setSmallIcon(R.drawable.test_not);
+        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.test_not);
+
+        notificationBuilder.setLargeIcon(icon);
 
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         notificationManager.notify(654, notificationBuilder.build());
