@@ -12,13 +12,16 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.codecamp.hia.tracking.models.Request;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -27,6 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -34,9 +38,9 @@ import javax.net.ssl.HttpsURLConnection;
 public class ApproveRequestActivity extends AppCompatActivity {
 
     private static final String TAG = "ApproveRequestActivity";
-    private String documentReference;
     private DocumentReference mDocument;
     ImageView passportImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +61,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
     }
 
 
-
-    class DownloadThread extends AsyncTask<Request,Request,Request>{
+    class DownloadThread extends AsyncTask<Request, Request, Request> {
         Request request;
         private boolean done = false;
 
@@ -82,10 +85,10 @@ public class ApproveRequestActivity extends AppCompatActivity {
                     try {
                         URL uri = new URL(snapshot.getString(Request.IMAGE_URL));
                         urlConnection = (uri.openConnection());
-                        Log.d(TAG, "onComplete: ob: "+urlConnection);
+                        Log.d(TAG, "onComplete: ob: " + urlConnection);
 
 
-                        int statusCode =((HttpURLConnection)urlConnection).getResponseCode();
+                        int statusCode = ((HttpURLConnection) urlConnection).getResponseCode();
 
                         if (statusCode != HttpURLConnection.HTTP_OK) {
                             Log.w(TAG, "run: Can't download Image", null);
@@ -104,41 +107,41 @@ public class ApproveRequestActivity extends AppCompatActivity {
                     }
                 }
             });
-            while (!done);
+            while (!done) ;
             return request;
         }
 
-//        private Request downloadPhoto(final String urlString, Request request) {
-//            HttpURLConnection urlConnection = null;
-//            try {
-//                URL url = new URL(urlString);
-//                urlConnection = (HttpURLConnection) url.openConnection();
-//                urlConnection.connect();
-//
-//                int statusCode = urlConnection.getResponseCode();
-//                if (statusCode != HttpURLConnection.HTTP_OK) {
-//                    Log.w(TAG, "run: Can't download Image", null);
-//                } else {
-//                    InputStream inputStream = urlConnection.getInputStream();
-//                    if (inputStream != null) {
-//                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//                        Log.wtf(TAG, "finished download", null);
-//                        request.setPassportPhoto(bitmap);
-//                        return request;
-//                    }
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
 
         @Override
         protected void onPostExecute(Request request) {
             super.onPostExecute(request);
             Log.wtf(TAG, "onPostExecute: ");
             passportImageView.setImageBitmap(request.getPassportPhoto());
+            approveRequest();
             //todo set the rest of the data
         }
+    }
+
+    private void approveRequest() {
+        mDocument.update(Request.IS_APPROVED, true).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: updated");
+                HashMap<String, Object> data = new HashMap<>();
+                data.put(Request.STATUS_FIELD, 0);
+                data.put(Request.TIMESTAMP_FIELD, FieldValue.serverTimestamp());
+                mDocument.collection(Request.PROGRESS_COLLECTION_NAME)
+                        .document()
+                        .set(data)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(ApproveRequestActivity.this, "Approved", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+
+            }
+        });
     }
 }

@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences.*;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,7 +25,11 @@ import com.codecamp.hia.tracking.models.Request;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtVehicleNumber;
     private Button btnAskForApproval;
     private Button btnAccessAdmin;
-    ImageView imageToUpload;
+    private FirebaseStorage storage;
+    private ImageView imageToUpload;
     private FirebaseFirestore mDatabase;
     public static final String TAG = "MainActivity";
     public static final String DOCUMENT_REF = "documentRef";
@@ -49,13 +56,15 @@ public class MainActivity extends AppCompatActivity {
         editor = preferences.edit();
         String ticketNumber = preferences.getString(Request.TICKET_NUMBER, null);
         if (ticketNumber != null) {
-            String id = preferences.getString(DOCUMENT_REF,null);
-            Intent intent = new Intent(this,TrackingActivity.class);
-            intent.putExtra(DOCUMENT_REF,id);
+            String id = preferences.getString(DOCUMENT_REF, null);
+            Intent intent = new Intent(this, TrackingActivity.class);
+            intent.putExtra(DOCUMENT_REF, id);
             startActivity(intent);
             finish();
         }
         mDatabase = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
+
         txtTicketNumber = findViewById(R.id.editTicket);
         txtVehicleNumber = findViewById(R.id.editVehicle);
         btnAskForApproval = findViewById(R.id.btnApprove);
@@ -83,31 +92,56 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean writeNewRequest(final String ticketNumber, long vehicleNumber) {
+    private boolean writeNewRequest(final String ticketNumber, final long vehicleNumber) {
+
         HashMap<String, Object> data = new HashMap<>();
+        final StorageReference storageRef = storage.getReference("private/passports/" + vehicleNumber + ".jpg");
+        final String id = mDatabase.collection("requests").document().getId();
         data.put(Request.TICKET_NUMBER, ticketNumber);
         data.put(Request.VEHICLE_NUMBER, vehicleNumber);
         data.put(Request.IS_APPROVED, false);
-        final String id = mDatabase.collection("requests").document().getId();
+        data.put(Request.IMAGE_URL, storageRef.getDownloadUrl());
         mDatabase.collection("requests").document(id)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
-                        Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(DOCUMENT_REF, id);
-                        intent.putExtras(bundle);
-                        startService(intent);
-                        editor.putString(Request.TICKET_NUMBER, ticketNumber);
-                        editor.putString(DOCUMENT_REF,id);
-                        editor.commit();
-                        Intent trackActivityIntent = new Intent(MainActivity.this, TrackingActivity.class);
-                        trackActivityIntent.putExtra(DOCUMENT_REF, id);
-                        startActivity(intent);
-                        finish();
+
+
+                        Bitmap bitmap = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+
+                        UploadTask uploadTask = storageRef.putBytes(data);
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString(DOCUMENT_REF, id);
+                                intent.putExtras(bundle);
+                                startService(intent);
+
+                                editor.putString(Request.TICKET_NUMBER, ticketNumber);
+                                editor.putString(DOCUMENT_REF, id);
+                                editor.commit();
+
+                                Intent trackActivityIntent = new Intent(MainActivity.this, TrackingActivity.class);
+                                trackActivityIntent.putExtra(DOCUMENT_REF, id);
+                                startActivity(trackActivityIntent);
+                                finish();
+                            }
+                        });
+
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

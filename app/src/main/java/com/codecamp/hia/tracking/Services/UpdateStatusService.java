@@ -70,7 +70,11 @@ public class UpdateStatusService extends Service {
                             Log.wtf(ERROR_SERVICE_MSG, e.getMessage());
                         } else {
                             Log.d(TAG, "onEvent: CHANGED");
-                            progressReference.orderBy(Request.STATUS_FIELD, Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            progressReference
+                                    .orderBy(Request.STATUS_FIELD, Query.Direction.DESCENDING)
+                                    .limit(1)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     try {
