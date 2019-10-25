@@ -28,17 +28,14 @@ public class AdminPanelActivity extends AppCompatActivity {
     private static final String TAG = "AdminPanelActivity";
     ArrayList<Request> requests = new ArrayList<>();
     private FirebaseFirestore mDatabase;
-    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_panal);
         mDatabase = FirebaseFirestore.getInstance();
-        listView = findViewById(R.id.list_view);
         requests = getData();
-        ArrayAdapter adapter = new ArrayAdapter<Request>(this, R.layout.activity_admin_panal, requests);
-        listView.setAdapter(adapter);
+
     }
 
     private ArrayList<Request> getData() {

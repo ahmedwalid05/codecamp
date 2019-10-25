@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.codecamp.hia.tracking.models.Request;
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDatabase = FirebaseFirestore.getInstance();
-
 
         txtTicketNumber = findViewById(R.id.editTicket);
         txtVehicleNumber = findViewById(R.id.editVehicle);
@@ -68,13 +68,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
-                        //TODO - inform user about success
+                        Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error writing document", e);
+                        Toast.makeText(MainActivity.this, "Request failed to send", Toast.LENGTH_LONG).show();
 
                     }
                 });
