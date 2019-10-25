@@ -2,6 +2,7 @@ package com.codecamp.hia.tracking.Services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -43,6 +44,7 @@ public class UpdateStatusService extends Service {
     private FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
     Intent intent;
 
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -51,8 +53,10 @@ public class UpdateStatusService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Intent intentNotifcation = new Intent(this, TrackingActivity.class);
+        intentNotifcation.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         this.intent = intent;
-
         final NotificationManager notificationManager = createNotificationChannel();
         Log.d(TAG, "onStartCommand: Service started");
         Bundle happyBundle = intent.getExtras();
@@ -75,29 +79,29 @@ public class UpdateStatusService extends Service {
                                     .limit(1)
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    try {
-                                        Log.d(TAG, "onComplete: size" + task.getResult().getDocuments().size());
-                                        if (task.getResult().getDocuments().size() > 0) {
-                                            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            try {
+                                                Log.d(TAG, "onComplete: size" + task.getResult().getDocuments().size());
+                                                if (task.getResult().getDocuments().size() > 0) {
+                                                    DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
 
-                                            Log.d(TAG, "onComplete: error cause of :"+documentSnapshot.get(Request.STATUS_FIELD));
-                                            int progressStatus = Integer.parseInt( documentSnapshot.get(Request.STATUS_FIELD).toString());
-                                            Timestamp timestamp = documentSnapshot.getTimestamp(Request.TIMESTAMP_FIELD);
-                                            if (progressStatus == 0) {
-                                                Log.d(TAG, "onComplete: Start tracking activity");
-                                                //TODO - should start trackingActivity if app is open, otherwise should save it in shared preference
+                                                    Log.d(TAG, "onComplete: error cause of :" + documentSnapshot.get(Request.STATUS_FIELD));
+                                                    int progressStatus = Integer.parseInt(documentSnapshot.get(Request.STATUS_FIELD).toString());
+                                                    Timestamp timestamp = documentSnapshot.getTimestamp(Request.TIMESTAMP_FIELD);
+                                                    if (progressStatus == 0) {
+                                                        Log.d(TAG, "onComplete: Start tracking activity");
+                                                        //TODO - should start trackingActivity if app is open, otherwise should save it in shared preference
+                                                    }
+                                                    createNotification(progressStatus, notificationManager, pendingIntent);
+                                                }
+
+                                            } catch (NumberFormatException | NullPointerException e1) {
+                                                Log.wtf(ERROR_SERVICE_MSG, e1);
                                             }
-                                            createNotification(progressStatus, notificationManager);
                                         }
 
-                                    } catch (NumberFormatException | NullPointerException e1) {
-                                        Log.wtf(ERROR_SERVICE_MSG, e1);
-                                    }
-                                }
-
-                            });
+                                    });
 
                         }
                     }
@@ -114,7 +118,7 @@ public class UpdateStatusService extends Service {
         super.onDestroy();
     }
 
-    private void createNotification(int code, NotificationManager notificationManager) {
+    private void createNotification(int code, NotificationManager notificationManager, PendingIntent pendingIntent) {
         String notificationMSG = "";
         switch (code) {
             case 1:
@@ -127,17 +131,20 @@ public class UpdateStatusService extends Service {
                 notificationMSG = "bags collected"; //todo add and modify so that the switch matches all the cases
         }
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
+        notificationBuilder.setSmallIcon(R.drawable.test_not);
         notificationBuilder.setContentTitle("HIA Arrivals Notification"); //todo change this to a suitable title
         notificationBuilder.setContentText(notificationMSG);
+        notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        long[] vibrations = {250,250};
+        notificationBuilder.setVibrate(vibrations);
 
-        notificationBuilder.setSmallIcon(R.drawable.test_not);
-        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.test_not);
-
-        notificationBuilder.setLargeIcon(icon);
-
+//        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
+//                R.drawable.test_not);
+        notificationBuilder.setContentIntent(pendingIntent);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        notificationBuilder.setAutoCancel(true);
         notificationManager.notify(654, notificationBuilder.build());
+        Log.wtf(ERROR_SERVICE_MSG,"notified");
     }
 
     private NotificationManager createNotificationChannel() {
@@ -145,6 +152,7 @@ public class UpdateStatusService extends Service {
             CharSequence name = "HIAChannelName";
             String description = "HIAChannelDescription";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
