@@ -1,19 +1,34 @@
 package com.codecamp.hia.tracking.models;
 
-public class Request {
+import com.google.firebase.firestore.DocumentReference;
+
+import java.io.Serializable;
+
+public class Request implements Serializable {
 
     private String ticketNumber;
     private long vehicleNumber;
     private boolean isApproved;
+    private DocumentReference documentReference;
 
     public static final String TICKET_NUMBER ="ticketNumber";
     public static final String VEHICLE_NUMBER ="vehicleNumber";
     public static final String IS_APPROVED = "isApproved";
 
-    public Request(String ticketNumber, long vehicleNumber, boolean isApproved) {
+
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
+    public void setDocumentReference(DocumentReference documentReference) {
+        this.documentReference = documentReference;
+    }
+
+    public Request(String ticketNumber, long vehicleNumber, boolean isApproved, DocumentReference documentReference) {
         this.ticketNumber = ticketNumber;
         this.vehicleNumber = vehicleNumber;
         this.isApproved = isApproved;
+        this.documentReference = documentReference;
     }
 
     public Request() {

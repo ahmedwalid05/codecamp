@@ -3,6 +3,7 @@ package com.codecamp.hia.tracking;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,7 @@ public class AdminPanelActivity extends AppCompatActivity {
                         request.setTicketNumber(snapshotList.get(i).getString(Request.TICKET_NUMBER));
                         request.setVehicleNumber(snapshotList.get(i).getLong(Request.VEHICLE_NUMBER));
                         request.setApproved(snapshotList.get(i).getBoolean(Request.IS_APPROVED));
+                        request.setDocumentReference(snapshotList.get(i).getReference());
                         requests.add(request);
                     }
                     Log.d(TAG, "Added all documents");
@@ -67,34 +69,12 @@ public class AdminPanelActivity extends AppCompatActivity {
 
         return requests;
     }
-//    private class MyAdapter extends BaseAdapter {
-//
-//        // override other abstract methods here
-//
-//        @Override
-//        public int getCount() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public Object getItem(int position) {
-//            return null;
-//        }
-//
-//        @Override
-//        public long getItemId(int position) {
-//            return 0;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup container) {
-//            if (convertView == null) {
-//                convertView = getLayoutInflater().inflate(R.layout.list_item, container, false);
-//            }
-//
-//            ((TextView) convertView.findViewById(R.id.fldTicketNumber))
-//                    .setText(getItem(position).toString());
-//            return convertView;
-//        }
-//    }
+    public void clickOnListItem(int postion ){
+        Intent intent = new Intent(AdminPanelActivity.this, TrackingActivity.class);
+
+        intent.putExtra("request", requests.get(postion));
+        startActivity(intent);
+
+
+    }
 }

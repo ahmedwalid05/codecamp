@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         data.put(Request.TICKET_NUMBER, ticketNumber);
         data.put(Request.VEHICLE_NUMBER, vehicleNumber);
         data.put(Request.IS_APPROVED, false);
-        mDatabase.collection("requests").document()
+        String id =mDatabase.collection("requests").document().getId();
+        mDatabase.collection("requests").document(id)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
