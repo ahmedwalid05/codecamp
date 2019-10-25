@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -25,7 +26,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class ApproveRequestActivity extends AppCompatActivity {
 
@@ -71,22 +75,33 @@ public class ApproveRequestActivity extends AppCompatActivity {
                     request.setTicketNumber(snapshot.getString(Request.TICKET_NUMBER));
                     request.setVehicleNumber(snapshot.getLong(Request.VEHICLE_NUMBER));
                     request.setDocumentReference(mDocument.getId());
-                    HttpURLConnection urlConnection = null;
+//                    Log.d(TAG, "onComplete: url:" +snapshot.getString(Request.IMAGE_URL));
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    URLConnection urlConnection = null;
                     try {
-                        URL url = new URL(snapshot.getString(Request.IMAGE_URL));
-                        urlConnection = (HttpURLConnection) url.openConnection();
-                        int statusCode = urlConnection.getResponseCode();
+                        URL uri = new URL(snapshot.getString(Request.IMAGE_URL));
+                        urlConnection = (uri.openConnection());
+                        Log.d(TAG, "onComplete: ob: "+urlConnection);
+
+
+                        int statusCode =((HttpURLConnection)urlConnection).getResponseCode();
+
                         if (statusCode != HttpURLConnection.HTTP_OK) {
                             Log.w(TAG, "run: Can't download Image", null);
                         } else {
                             InputStream inputStream = urlConnection.getInputStream();
+//                            InputStream inputStream = uri.openStream();
                             if (inputStream != null) {
                                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                 Log.wtf(TAG, "finished download", null);
                                 request.setPassportPhoto(bitmap);
+                                return;
                             }
                         }
-                    } catch (IOException e) {
+//                       request.setPassportPhoto(BitmapFactory.decodeStream(new URL(snapshot.getString(Request.IMAGE_URL)).openConnection().getInputStream()));
+
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -122,6 +137,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Request request) {
             super.onPostExecute(request);
+            Log.d(TAG, "onPostExecute: ");
             passportImageView.setImageBitmap(request.getPassportPhoto());
             //todo set the rest of the data
         }
