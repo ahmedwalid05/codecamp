@@ -53,16 +53,16 @@ public class UpdateStatusService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.intent = intent;
 
-        final NotificationManager  notificationManager = createNotificationChannel();
+        final NotificationManager notificationManager = createNotificationChannel();
         Log.d(TAG, "onStartCommand: Service started");
         Bundle happyBundle = intent.getExtras();
         if (happyBundle != null) {
             String id = happyBundle.getString(MainActivity.DOCUMENT_REF, "NULL");
-            Log.d(TAG, "onStartCommand: ID: "+id);
+            Log.d(TAG, "onStartCommand: ID: " + id);
             if (!id.equals("NULL")) {
                 final CollectionReference progressReference = mDatabase.collection(Request.REQUEST_COLLECTION_NAME)
                         .document(id).collection(Request.PROGRESS_COLLECTION_NAME);
-                Log.d(TAG, "onStartCommand: referance: "+progressReference);
+                Log.d(TAG, "onStartCommand: referance: " + progressReference);
                 progressReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable final FirebaseFirestoreException e) {
@@ -74,9 +74,9 @@ public class UpdateStatusService extends Service {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     try {
-                                        Log.d(TAG, "onComplete: size"+task.getResult().getDocuments().size());
-                                        if(task.getResult().getDocuments().size()>0) {
-                                        DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                                        Log.d(TAG, "onComplete: size" + task.getResult().getDocuments().size());
+                                        if (task.getResult().getDocuments().size() > 0) {
+                                            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
 
                                             Log.d(TAG, "onComplete: error cause of :"+documentSnapshot.get(Request.STATUS_FIELD));
                                             int progressStatus = Integer.parseInt( documentSnapshot.get(Request.STATUS_FIELD).toString());

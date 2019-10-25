@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.*;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Adapter;
 
+import com.codecamp.hia.tracking.Adapters.AdapterHIA;
 import com.codecamp.hia.tracking.models.Request;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,6 +27,7 @@ public class AdminPanelActivity extends AppCompatActivity {
     private FirebaseFirestore mDatabase;
     private RecyclerView recyclerView;
     private LinearLayoutManager lm;
+    AdapterHIA adapterHIA;
 
 
 
@@ -34,7 +37,11 @@ public class AdminPanelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_panal);
         mDatabase = FirebaseFirestore.getInstance();
         requests = getData();
-
+        recyclerView = findViewById(R.id.requests_recycler);
+        lm = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(lm);
+        adapterHIA = new AdapterHIA(requests,this);
+        recyclerView.setAdapter(adapterHIA);
     }
 
     private ArrayList<Request> getData() {
@@ -57,7 +64,10 @@ public class AdminPanelActivity extends AppCompatActivity {
                         request.setDocumentReference(snapshotList.get(i).getId());
                         requests.add(request);
                     }
+                    adapterHIA.setRequests(requests);
+                    adapterHIA.notifyDataSetChanged();
                     Log.d(TAG, "Added all documents");
+
                 }
             }
         });
@@ -65,11 +75,5 @@ public class AdminPanelActivity extends AppCompatActivity {
 
         return requests;
     }
-    public void clickOnListItem(int postion ){
-        Intent intent = new Intent(AdminPanelActivity.this, TrackingActivity.class);
-        intent.putExtra("request", requests.get(postion).getDocumentReference());
-        startActivity(intent);
 
-
-    }
 }

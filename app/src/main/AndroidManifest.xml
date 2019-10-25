@@ -12,7 +12,6 @@
         <service android:name=".Services.UpdateStatusService"></service>
         <activity android:name=".TrackingActivity"></activity>
         <activity android:name=".ApproveRequestActivity"></activity>
-        <activity android:name=".TrackingActivity" />
         <activity android:name=".AdminPanelActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
