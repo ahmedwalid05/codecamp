@@ -75,10 +75,14 @@ public class ApproveRequestActivity extends AppCompatActivity {
             mDocument.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
                     DocumentSnapshot snapshot = task.getResult();
                     request.setTicketNumber(snapshot.getString(Request.TICKET_NUMBER));
                     request.setVehicleNumber(snapshot.getLong(Request.VEHICLE_NUMBER));
                     request.setDocumentReference(mDocument.getId());
+                    if(snapshot.getString(Request.IMAGE_URL)==null) {
+                        return;
+                    }
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
                     URLConnection urlConnection = null;

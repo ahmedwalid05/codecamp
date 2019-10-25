@@ -22,8 +22,11 @@ import android.widget.Toast;
 
 import com.codecamp.hia.tracking.Services.UpdateStatusService;
 import com.codecamp.hia.tracking.models.Request;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -94,65 +97,92 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean writeNewRequest(final String ticketNumber, final long vehicleNumber) {
 
-        HashMap<String, Object> data = new HashMap<>();
+
         final StorageReference storageRef = storage.getReference("private/passports/" + vehicleNumber + ".jpg");
         final String id = mDatabase.collection("requests").document().getId();
-        data.put(Request.TICKET_NUMBER, ticketNumber);
-        data.put(Request.VEHICLE_NUMBER, vehicleNumber);
-        data.put(Request.IS_APPROVED, false);
-        data.put(Request.IMAGE_URL, storageRef.getDownloadUrl());
-        mDatabase.collection("requests").document(id)
-                .set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
 
+        Log.d(TAG, "writeNewRequest: " + storageRef.getDownloadUrl());
 
-                        Bitmap bitmap = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap();
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byte[] data = baos.toByteArray();
+        Bitmap bitmap = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] dataByte = baos.toByteArray();
 
-                        UploadTask uploadTask = storageRef.putBytes(data);
-                        uploadTask.addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
+        UploadTask uploadTask = storageRef.putBytes(dataByte);
+        Task<Uri> uriTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
 
-                            }
-                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString(DOCUMENT_REF, id);
-                                intent.putExtras(bundle);
-                                startService(intent);
+                // Continue with the task to get the download URL
+                return storageRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    String downloadUrl = downloadUri.toString();
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(Request.TICKET_NUMBER, ticketNumber);
+                    data.put(Request.VEHICLE_NUMBER, vehicleNumber);
+                    data.put(Request.IS_APPROVED, false);
+                    Log.d(TAG, "onSuccess: " + downloadUrl);
+                    data.put(Request.IMAGE_URL, downloadUrl);
+                    mDatabase.collection("requests").document(id)
+                            .set(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString(DOCUMENT_REF, id);
+                                    intent.putExtras(bundle);
+                                    startService(intent);
 
-                                editor.putString(Request.TICKET_NUMBER, ticketNumber);
-                                editor.putString(DOCUMENT_REF, id);
-                                editor.commit();
+                                    editor.putString(Request.TICKET_NUMBER, ticketNumber);
+                                    editor.putString(DOCUMENT_REF, id);
+                                    editor.commit();
 
-                                Intent trackActivityIntent = new Intent(MainActivity.this, TrackingActivity.class);
-                                trackActivityIntent.putExtra(DOCUMENT_REF, id);
-                                startActivity(trackActivityIntent);
-                                finish();
-                            }
-                        });
+                                    Intent trackActivityIntent = new Intent(MainActivity.this, TrackingActivity.class);
+                                    trackActivityIntent.putExtra(DOCUMENT_REF, id);
+                                    startActivity(trackActivityIntent);
+                                    finish();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error writing document", e);
+                                    Toast.makeText(MainActivity.this, "Request failed to send", Toast.LENGTH_LONG).show();
+                                }
+                            });
 
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                        Toast.makeText(MainActivity.this, "Request failed to send", Toast.LENGTH_LONG).show();
-                    }
-                });
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
+//        uploadTask.addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//
+//            }
+//        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//            @Override
+//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//
+//            }
+//        });
 
         return false;
+
+
     }
 
     @Override
