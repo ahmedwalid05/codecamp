@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnAccessAdmin;
     private FirebaseFirestore mDatabase;
     public static final String TAG = "MainActivity";
+    public static final String DOCUMENT_REF = "documentRef";
 
     @Override
 
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         data.put(Request.TICKET_NUMBER, ticketNumber);
         data.put(Request.VEHICLE_NUMBER, vehicleNumber);
         data.put(Request.IS_APPROVED, false);
-        String id =mDatabase.collection("requests").document().getId();
+        final String id =mDatabase.collection("requests").document().getId();
         mDatabase.collection("requests").document(id)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -73,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                         Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(DOCUMENT_REF, id);
+                        intent.putExtras(bundle);
                         startService(intent);
 
                     }

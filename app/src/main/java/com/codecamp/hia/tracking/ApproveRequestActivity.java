@@ -39,7 +39,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
         documentReference = intent.getStringExtra("request");
         mDocument = FirebaseFirestore.getInstance().collection(Request.REQUEST_COLLECTION_NAME).document(documentReference);
         Request request  = getRequestData(documentReference);
-        //todo dispaly request data 
+        //todo dispaly request data
 
     }
 
