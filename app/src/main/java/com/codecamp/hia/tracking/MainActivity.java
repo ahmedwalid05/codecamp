@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.codecamp.hia.tracking.Services.UpdateStatusService;
 import com.codecamp.hia.tracking.models.Request;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mDatabase = FirebaseFirestore.getInstance();
 
         txtTicketNumber = findViewById(R.id.editTicket);
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                         Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
+                        startService(intent);
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

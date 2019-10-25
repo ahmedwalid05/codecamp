@@ -2,6 +2,7 @@ package com.codecamp.hia.tracking;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.*;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,10 @@ public class AdminPanelActivity extends AppCompatActivity {
     private static final String TAG = "AdminPanelActivity";
     ArrayList<Request> requests = new ArrayList<>();
     private FirebaseFirestore mDatabase;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager lm;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +67,6 @@ public class AdminPanelActivity extends AppCompatActivity {
     }
     public void clickOnListItem(int postion ){
         Intent intent = new Intent(AdminPanelActivity.this, TrackingActivity.class);
-
         intent.putExtra("request", requests.get(postion).getDocumentReference());
         startActivity(intent);
 
