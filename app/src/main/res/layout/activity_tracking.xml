@@ -11,14 +11,12 @@
     <TextView
         android:id="@+id/status"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="19dp"
-        android:layout_marginTop="114dp"
+        android:layout_marginTop="90dp"
         android:layout_marginEnd="98dp"
-        android:layout_marginBottom="10dp"
         android:text="Status: "
         android:textSize="10pt"
-        app:layout_constraintBottom_toTopOf="@+id/timeRemaning"
         app:layout_constraintEnd_toStartOf="@+id/circular_view_with_timer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,27 +26,39 @@
         android:layout_width="191dp"
         android:layout_height="39dp"
         android:layout_marginStart="19dp"
-        android:layout_marginBottom="521dp"
+        android:layout_marginTop="26dp"
         android:text="Time Remaining: "
         android:textSize="10pt"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status" />
 
     <ticker.views.com.ticker.widgets.circular.timer.view.CircularView
         android:id="@+id/circular_view_with_timer"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="112dp"
         android:layout_marginEnd="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/timeRemaning"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.68"
         app:layout_constraintStart_toEndOf="@+id/timeRemaning"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/timeRemaning"
         app:m_arc_stroke_color="@android:color/white"
         app:m_cicle_stroke_width="14"
-        app:m_circle_radius="80"
+        app:m_circle_radius="40"
         app:m_circle_stroke_color="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="32dp"
+        android:text="Passed Baggage Collection"
+        app:layout_constraintBottom_toBottomOf="@+id/status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/status"
+        app:layout_constraintTop_toTopOf="@+id/status" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

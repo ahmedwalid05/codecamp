@@ -11,6 +11,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,6 +43,9 @@ public class ApproveRequestActivity extends AppCompatActivity {
     private static final String TAG = "ApproveRequestActivity";
     private DocumentReference mDocument;
     ImageView passportImageView;
+    private EditText txtTicketNumber;
+    private EditText txtVehicleNumber;
+    private Button btnApprove;
 
 
     @Override
@@ -47,11 +53,16 @@ public class ApproveRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_approve_request);
         passportImageView = findViewById(R.id.passport_iv);
+        txtTicketNumber = findViewById(R.id.txtTicketNumber);
+        txtVehicleNumber = findViewById(R.id.txtVehicleNumber);
+        btnApprove  = findViewById(R.id.btnApprove);
         Intent intent = getIntent();
         Bundle happyBundle = intent.getExtras();
         Request request = (Request) happyBundle.getSerializable(Request.REQUEST_COLLECTION_NAME);
         mDocument = FirebaseFirestore.getInstance().collection(Request.REQUEST_COLLECTION_NAME).document(request.getDocumentReference());
         getRequestData(request);
+        txtTicketNumber.setText(request.getTicketNumber());
+        txtVehicleNumber.setText(request.getVehicleNumber()+"");
 
     }
 
@@ -72,6 +83,14 @@ public class ApproveRequestActivity extends AppCompatActivity {
         @Override
         protected Request doInBackground(Request... requests) {
             final Request request = new Request();
+
+            btnApprove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    approveRequest();
+                }
+            });
+
             mDocument.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -121,7 +140,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
             super.onPostExecute(request);
             Log.wtf(TAG, "onPostExecute: ");
             passportImageView.setImageBitmap(request.getPassportPhoto());
-            approveRequest();
+
             //todo set the rest of the data
         }
     }
