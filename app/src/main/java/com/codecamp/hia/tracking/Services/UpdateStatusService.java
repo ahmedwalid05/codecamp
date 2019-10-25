@@ -91,7 +91,7 @@ public class UpdateStatusService extends Service {
                                                     Timestamp timestamp = documentSnapshot.getTimestamp(Request.TIMESTAMP_FIELD);
                                                     if (progressStatus == 0) {
                                                         Log.d(TAG, "onComplete: Start tracking activity");
-                                                        //TODO - should start trackingActivity if app is open, otherwise should save it in shared preference
+                                                        //TODO - should update tracking activity
                                                     }
                                                     createNotification(progressStatus, notificationManager, pendingIntent);
                                                 }
