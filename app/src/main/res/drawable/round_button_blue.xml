@@ -14,4 +14,18 @@
         </gradient>
     </shape>
 </item>
+    <item android:state_pressed="true"
+        >
+        <shape android:shape="rectangle">
+            <corners android:radius="15dp">
+            </corners>
+            <stroke android:color="@android:color/black"
+                android:width="1dp">
+
+            </stroke>
+            <gradient android:startColor="@color/darkerLightBlue" android:endColor="@color/darkerLightBlue">
+
+            </gradient>
+        </shape>
+    </item>
 </selector>
