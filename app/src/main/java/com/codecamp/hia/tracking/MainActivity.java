@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences.*;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -34,16 +36,26 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore mDatabase;
     public static final String TAG = "MainActivity";
     public static final String DOCUMENT_REF = "documentRef";
+    public static final String PREFRENECES_NAME = "shared";
+    private SharedPreferences preferences;
+    private Editor editor;
 
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //TODO - check if the app is tracking a request
-
+        preferences = getSharedPreferences(PREFRENECES_NAME, MODE_PRIVATE);
+        editor = preferences.edit();
+        String ticketNumber = preferences.getString(Request.TICKET_NUMBER, null);
+        if (ticketNumber != null) {
+            String id = preferences.getString(DOCUMENT_REF,null);
+            Intent intent = new Intent(this,TrackingActivity.class);
+            intent.putExtra(DOCUMENT_REF,id);
+            startActivity(intent);
+            finish();
+        }
         mDatabase = FirebaseFirestore.getInstance();
-
         txtTicketNumber = findViewById(R.id.editTicket);
         txtVehicleNumber = findViewById(R.id.editVehicle);
         btnAskForApproval = findViewById(R.id.btnApprove);
@@ -71,13 +83,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean writeNewRequest(String ticketNumber, long vehicleNumber) {
-
+    private boolean writeNewRequest(final String ticketNumber, long vehicleNumber) {
         HashMap<String, Object> data = new HashMap<>();
         data.put(Request.TICKET_NUMBER, ticketNumber);
         data.put(Request.VEHICLE_NUMBER, vehicleNumber);
         data.put(Request.IS_APPROVED, false);
-        final String id =mDatabase.collection("requests").document().getId();
+        final String id = mDatabase.collection("requests").document().getId();
         mDatabase.collection("requests").document(id)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -90,7 +101,13 @@ public class MainActivity extends AppCompatActivity {
                         bundle.putString(DOCUMENT_REF, id);
                         intent.putExtras(bundle);
                         startService(intent);
-
+                        editor.putString(Request.TICKET_NUMBER, ticketNumber);
+                        editor.putString(DOCUMENT_REF,id);
+                        editor.commit();
+                        Intent trackActivityIntent = new Intent(MainActivity.this, TrackingActivity.class);
+                        trackActivityIntent.putExtra(DOCUMENT_REF, id);
+                        startActivity(intent);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -98,10 +115,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error writing document", e);
                         Toast.makeText(MainActivity.this, "Request failed to send", Toast.LENGTH_LONG).show();
-
                     }
                 });
-
 
         return false;
     }
@@ -109,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             imageToUpload.setImageURI(selectedImage);
         }

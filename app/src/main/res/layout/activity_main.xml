@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
@@ -12,22 +12,30 @@
         android:layout_width="187dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100px"
+        android:layout_marginTop="36dp"
         android:layout_weight="1"
         android:ems="10"
+        android:hint="Ticket Number"
         android:inputType="textPersonName"
-        android:text="Ticket Number" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editVehicle"
         android:layout_width="187dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/editTicket"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
         android:layout_weight="1"
         android:ems="10"
+        android:hint="Vehicle Number"
         android:inputType="textPersonName"
-        android:text="Vehicle Number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTicket"
         tools:ignore="UnknownId" />
 
     <ImageView
@@ -36,8 +44,12 @@
         android:layout_height="162dp"
         android:layout_below="@+id/editVehicle"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editVehicle"
         app:srcCompat="@mipmap/ic_importt_foreground"
         tools:ignore="UnknownId" />
 
@@ -47,14 +59,26 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/imgView"
         android:layout_centerHorizontal="true"
-        android:text="ASK FOR APPROVAL"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/round_button_blue"
+        android:text="@string/ask_for_approval"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgView"
         tools:ignore="UnknownId" />
 
     <Button
         android:id="@+id/btnAccessAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="ACCESS ADMIN" />
-</RelativeLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/round_button_blue"
+        android:padding="5dp"
+        android:text="@string/access_admin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

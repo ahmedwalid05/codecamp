@@ -76,7 +76,6 @@ public class ApproveRequestActivity extends AppCompatActivity {
                     request.setTicketNumber(snapshot.getString(Request.TICKET_NUMBER));
                     request.setVehicleNumber(snapshot.getLong(Request.VEHICLE_NUMBER));
                     request.setDocumentReference(mDocument.getId());
-//                    Log.d(TAG, "onComplete: url:" +snapshot.getString(Request.IMAGE_URL));
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
                     URLConnection urlConnection = null;
@@ -92,7 +91,6 @@ public class ApproveRequestActivity extends AppCompatActivity {
                             Log.w(TAG, "run: Can't download Image", null);
                         } else {
                             InputStream inputStream = urlConnection.getInputStream();
-//                            InputStream inputStream = uri.openStream();
                             if (inputStream != null) {
                                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                 Log.wtf(TAG, "finished download", null);
@@ -100,7 +98,6 @@ public class ApproveRequestActivity extends AppCompatActivity {
                                 done = true;
                             }
                         }
-//                       request.setPassportPhoto(BitmapFactory.decodeStream(new URL(snapshot.getString(Request.IMAGE_URL)).openConnection().getInputStream()));
 
                     } catch (Exception e) {
                         e.printStackTrace();
