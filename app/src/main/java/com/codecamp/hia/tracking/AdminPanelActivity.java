@@ -35,6 +35,7 @@ public class AdminPanelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_panal);
         mDatabase = FirebaseFirestore.getInstance();
         listView = findViewById(R.id.list_view);
+        requests = getData();
         ArrayAdapter adapter = new ArrayAdapter<Request>(this, R.layout.activity_admin_panal, requests);
         listView.setAdapter(adapter);
     }

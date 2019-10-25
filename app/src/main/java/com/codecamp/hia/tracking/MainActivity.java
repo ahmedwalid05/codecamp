@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         HashMap<String, Object> data = new HashMap<>();
         data.put(Request.TICKET_NUMBER, ticketNumber);
-        data.put(Request.TICKET_NUMBER, vehicleNumber);
+        data.put(Request.VEHICLE_NUMBER, vehicleNumber);
         data.put(Request.IS_APPROVED, false);
         mDatabase.collection("requests").document()
                 .set(data)
