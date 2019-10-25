@@ -9,6 +9,8 @@ public class Request implements Serializable {
 
     public static final String REQUEST_COLLECTION_NAME = "requests";
     public static final String PROGRESS_COLLECTION_NAME = "progress";
+    public static final String STATUS_FIELD = "progressStatus";
+    public static final String TIMESTAMP_FIELD = "checkPointTime";
     private String ticketNumber;
     private long vehicleNumber;
     private boolean isApproved;
