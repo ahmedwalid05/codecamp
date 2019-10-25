@@ -58,8 +58,9 @@ public class ApproveRequestActivity extends AppCompatActivity {
 
 
 
-    class DownloadThread extends AsyncTask<Request,String,Request>{
+    class DownloadThread extends AsyncTask<Request,Request,Request>{
         Request request;
+        private boolean done = false;
 
         public DownloadThread(Request request) {
             this.request = request;
@@ -96,7 +97,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
                                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                 Log.wtf(TAG, "finished download", null);
                                 request.setPassportPhoto(bitmap);
-                                return;
+                                done = true;
                             }
                         }
 //                       request.setPassportPhoto(BitmapFactory.decodeStream(new URL(snapshot.getString(Request.IMAGE_URL)).openConnection().getInputStream()));
@@ -106,6 +107,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
                     }
                 }
             });
+            while (!done);
             return request;
         }
 
@@ -137,7 +139,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Request request) {
             super.onPostExecute(request);
-            Log.d(TAG, "onPostExecute: ");
+            Log.wtf(TAG, "onPostExecute: ");
             passportImageView.setImageBitmap(request.getPassportPhoto());
             //todo set the rest of the data
         }

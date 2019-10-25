@@ -29,15 +29,5 @@
         tools:layout_editor_absoluteX="67dp"
         tools:layout_editor_absoluteY="163dp" />
 
-    <ticker.views.com.ticker.widgets.circular.timer.view.CircularView
-        android:id="@+id/circular_view_with_timer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:m_circle_radius="80"
-        app:m_cicle_stroke_width="14"
-        app:m_arc_stroke_color="@android:color/white"
-        app:m_circle_stroke_color="@color/colorPrimary"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        />
+
 </RelativeLayout>
