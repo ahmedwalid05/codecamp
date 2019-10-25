@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.codecamp.hia.tracking.MainActivity;
+import com.codecamp.hia.tracking.R;
 import com.codecamp.hia.tracking.TrackingActivity;
 import com.codecamp.hia.tracking.models.Request;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -75,8 +76,8 @@ public class UpdateStatusService extends Service {
                                         if(task.getResult().getDocuments().size()>0) {
                                         DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
 
-
-                                            int progressStatus = (int) documentSnapshot.get(Request.STATUS_FIELD);
+                                            Log.d(TAG, "onComplete: error cause of :"+documentSnapshot.get(Request.STATUS_FIELD));
+                                            int progressStatus = Integer.parseInt( documentSnapshot.get(Request.STATUS_FIELD).toString());
                                             Timestamp timestamp = documentSnapshot.getTimestamp(Request.TIMESTAMP_FIELD);
                                             if (progressStatus == 0) {
                                                 Log.d(TAG, "onComplete: Start tracking activity");
@@ -110,7 +111,7 @@ public class UpdateStatusService extends Service {
     private void createNotification(int code, NotificationManager notificationManager) {
         String notificationMSG = "";
         switch (code) {
-            case 2:
+            case 1:
                 notificationMSG = "plane landed";
                 break;
             case 3:
@@ -119,6 +120,8 @@ public class UpdateStatusService extends Service {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
         notificationBuilder.setContentTitle("Notification"); //todo change this to a suitable title
         notificationBuilder.setContentText(notificationMSG);
+        notificationBuilder.setSmallIcon(R.drawable.test_not);
+
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         notificationManager.notify(654, notificationBuilder.build());
     }
