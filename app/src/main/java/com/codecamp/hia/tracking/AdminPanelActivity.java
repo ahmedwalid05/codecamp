@@ -40,7 +40,7 @@ public class AdminPanelActivity extends AppCompatActivity {
 
     private ArrayList<Request> getData() {
         final ArrayList<Request> requests = new ArrayList<>();
-        mDatabase.collection("requests")
+        mDatabase.collection(Request.REQUEST_COLLECTION_NAME)
                 .whereEqualTo("isApproved", false)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
