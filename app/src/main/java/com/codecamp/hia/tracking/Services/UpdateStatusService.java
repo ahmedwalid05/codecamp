@@ -27,6 +27,7 @@ import java.util.Collection;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 public class UpdateStatusService extends Service {
     private static final String ERROR_SERVICE_MSG = "error";
@@ -44,7 +45,7 @@ public class UpdateStatusService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.intent = intent;
 
-        createNotificationChannel();
+        final NotificationManager  notificationManager = createNotificationChannel();
 
         Bundle happyBundle = intent.getExtras();
         if (happyBundle != null) {
@@ -64,7 +65,10 @@ public class UpdateStatusService extends Service {
                                     try {
                                         int progressStatus = (int) task.getResult().getDocuments().get(0).get(Request.STATUS_FIELD);
                                         Timestamp timestamp = task.getResult().getDocuments().get(0).getTimestamp(Request.TIMESTAMP_FIELD);
-                                        createNotification(progressStatus);
+                                        if(progressStatus == 0){
+                                            //TODO - should start trackingActivity if app is open, otherwise should save it in shared preference
+                                        }
+                                        createNotification(progressStatus, notificationManager);
 
                                     } catch (NumberFormatException | NullPointerException e1) {
                                         Log.wtf(ERROR_SERVICE_MSG, e1);
@@ -88,22 +92,23 @@ public class UpdateStatusService extends Service {
         super.onDestroy();
     }
 
-    private void createNotification(int code) {
+    private void createNotification(int code, NotificationManager notificationManager) {
         String notificationMSG = "";
         switch (code) {
-            case 1:
+            case 2:
                 notificationMSG = "plane landed";
                 break;
-            case 2:
+            case 3:
                 notificationMSG = "bags collected"; //todo add and modify so that the switch matches all the cases
         }
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
         notificationBuilder.setContentTitle("Notification"); //todo change this to a suitable title
         notificationBuilder.setContentText(notificationMSG);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        notificationManager.notify(654, notificationBuilder.build());
     }
 
-    void createNotificationChannel() {
+    private NotificationManager createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "HIAChannelName";
             String description = "HIAChannelDescription";
@@ -112,6 +117,8 @@ public class UpdateStatusService extends Service {
             channel.setDescription(description);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
+            return notificationManager;
         }
+        return null;
     }
 }

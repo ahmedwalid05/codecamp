@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//TODO - check if the app is tracking a request
 
         mDatabase = FirebaseFirestore.getInstance();
 
