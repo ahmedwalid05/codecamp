@@ -49,7 +49,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
 
     public void getRequestData(Request request) {
         DownloadThread downloadThread = new DownloadThread(request);
-        downloadThread.doInBackground(request);
+        downloadThread.execute(request);
     }
 
 
