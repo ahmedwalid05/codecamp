@@ -1,6 +1,7 @@
 package com.codecamp.hia.tracking.models;
 
-import com.google.firebase.firestore.DocumentReference;
+import android.graphics.Bitmap;
+import android.widget.ImageView;
 
 import java.io.Serializable;
 
@@ -11,26 +12,35 @@ public class Request implements Serializable {
     private String ticketNumber;
     private long vehicleNumber;
     private boolean isApproved;
-    private DocumentReference documentReference;
-
+    private Bitmap passportPhoto;
+    private String documentReference;
     public static final String TICKET_NUMBER ="ticketNumber";
     public static final String VEHICLE_NUMBER ="vehicleNumber";
     public static final String IS_APPROVED = "isApproved";
+    public static final String IMAGE_URL = "imageURL";
 
 
-    public DocumentReference getDocumentReference() {
+    public String getDocumentReference() {
         return documentReference;
     }
 
-    public void setDocumentReference(DocumentReference documentReference) {
+    public void setDocumentReference(String documentReference) {
         this.documentReference = documentReference;
     }
 
-    public Request(String ticketNumber, long vehicleNumber, boolean isApproved, DocumentReference documentReference) {
+    public Bitmap getPassportPhoto() {
+        return passportPhoto;
+    }
+
+    public void setPassportPhoto(Bitmap passportPhoto) {
+        this.passportPhoto = passportPhoto;
+    }
+
+    public Request(String ticketNumber, long vehicleNumber, boolean isApproved) {
         this.ticketNumber = ticketNumber;
         this.vehicleNumber = vehicleNumber;
         this.isApproved = isApproved;
-        this.documentReference = documentReference;
+
     }
 
     public Request() {

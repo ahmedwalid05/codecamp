@@ -6,12 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.codecamp.hia.tracking.models.Request;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,7 +49,7 @@ public class AdminPanelActivity extends AppCompatActivity {
                         request.setTicketNumber(snapshotList.get(i).getString(Request.TICKET_NUMBER));
                         request.setVehicleNumber(snapshotList.get(i).getLong(Request.VEHICLE_NUMBER));
                         request.setApproved(snapshotList.get(i).getBoolean(Request.IS_APPROVED));
-                        request.setDocumentReference(snapshotList.get(i).getReference());
+                        request.setDocumentReference(snapshotList.get(i).getId());
                         requests.add(request);
                     }
                     Log.d(TAG, "Added all documents");
@@ -69,7 +63,7 @@ public class AdminPanelActivity extends AppCompatActivity {
     public void clickOnListItem(int postion ){
         Intent intent = new Intent(AdminPanelActivity.this, TrackingActivity.class);
 
-        intent.putExtra("request", requests.get(postion));
+        intent.putExtra("request", requests.get(postion).getDocumentReference());
         startActivity(intent);
 
 
