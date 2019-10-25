@@ -83,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
         btnAskForApproval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                writeNewRequest(txtTicketNumber.getText().toString(), Long.parseLong(txtVehicleNumber.getText().toString()));
+                if (!txtTicketNumber.getText().toString().isEmpty() && !txtVehicleNumber.getText().toString().isEmpty())
+                    writeNewRequest(txtTicketNumber.getText().toString(), Long.parseLong(txtVehicleNumber.getText().toString()));
             }
         });
         btnAccessAdmin.setOnClickListener(new View.OnClickListener() {
