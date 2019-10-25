@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "542349398086",
+    "firebase_url": "https://codecamp-7270d.firebaseio.com",
+    "project_id": "codecamp-7270d",
+    "storage_bucket": "codecamp-7270d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542349398086:android:b521138d1d87eea493ba47",
+        "android_client_info": {
+          "package_name": "com.codecamp.hia.tracking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "542349398086-q56l5apat90856assuu3ofk7lu33v11k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL9D6HILkSecn2ZXFw8EpSHggJt9IUGXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "542349398086-q56l5apat90856assuu3ofk7lu33v11k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
