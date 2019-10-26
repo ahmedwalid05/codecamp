@@ -183,8 +183,8 @@ public class UpdateStatusService extends Service {
         intent.setAction("com.codecamp.hia.tracking.STATUS_CHANGED");
         intent.putExtra(TIME,randomNumber);
         intent.putExtra(NOTIFICATION_MSG,notificationMSG);
-        LocalBroadcastManager lo= LocalBroadcastManager.getInstance(this);
-        lo.sendBroadcast(intent);
+        sendBroadcast(intent);
+        Log.wtf(TAG,"broadcast sent");
     }
 
     private NotificationManager createNotificationChannel() {

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,7 +38,7 @@ public class TrackingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking);
-        textView = findViewById(R.id.timeRemaning);
+        textView = findViewById(R.id.textView);
         circularViewWithTime = findViewById(R.id.circular_view_with_timer);
         if (UpdateStatusService.isRunning == false) {
             preferences = getSharedPreferences(PREFRENECES_NAME, MODE_PRIVATE);
@@ -52,6 +53,7 @@ public class TrackingActivity extends AppCompatActivity {
         receiver = new HIAReceiver();
         IntentFilter intentFilter = new IntentFilter("com.codecamp.hia.tracking.STATUS_CHANGED");
         registerReceiver(receiver,intentFilter);
+        Log.wtf(HIAReceiver.TAG, "receiver registered");
         CircularView.OptionsBuilder builderWithTimer =
                 new CircularView.OptionsBuilder()
                         .shouldDisplayText(true)
@@ -77,10 +79,11 @@ public class TrackingActivity extends AppCompatActivity {
 
 
     public void setStatusUpdate(String notificationMSG, int time) {
+        Log.wtf(HIAReceiver.TAG, "received");
         CircularView.OptionsBuilder builderWithTimer =
                 new CircularView.OptionsBuilder()
                         .shouldDisplayText(true)
-                        .setCounterInSeconds(time*60)
+                        .setCounterInSeconds(time)
                         .setCircularViewCallback(new CircularViewCallback() {
                             @Override
                             public void onTimerFinish() {
