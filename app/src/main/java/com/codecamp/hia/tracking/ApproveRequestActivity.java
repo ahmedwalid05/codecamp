@@ -141,7 +141,6 @@ public class ApproveRequestActivity extends AppCompatActivity {
             Log.wtf(TAG, "onPostExecute: ");
             passportImageView.setImageBitmap(request.getPassportPhoto());
 
-            //todo set the rest of the data
         }
     }
 

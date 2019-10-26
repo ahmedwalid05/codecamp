@@ -1,5 +1,6 @@
 package com.codecamp.hia.tracking.Services;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -31,6 +32,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,7 +93,7 @@ public class UpdateStatusService extends Service {
                                                     Timestamp timestamp = documentSnapshot.getTimestamp(Request.TIMESTAMP_FIELD);
                                                     if (progressStatus == 0) {
                                                         Log.d(TAG, "onComplete: Start tracking activity");
-                                                        //TODO - should start trackingActivity if app is open, otherwise should save it in shared preference
+                                                        //TODO - should update tracking activity
                                                     }
                                                     createNotification(progressStatus, notificationManager, pendingIntent);
                                                 }
@@ -120,21 +122,33 @@ public class UpdateStatusService extends Service {
 
     private void createNotification(int code, NotificationManager notificationManager, PendingIntent pendingIntent) {
         String notificationMSG = "";
+        int timeInSeconds = 3600;
         switch (code) {
+            case 0:
+                notificationMSG = "Waiting For approval ";
+                setUI(notificationMSG, getEstimate(timeInSeconds));
+                break;
             case 1:
                 notificationMSG = "plane landed";
+                timeInSeconds = 2000;
+                setUI(notificationMSG, getEstimate(timeInSeconds));
                 break;
             case 2:
-                notificationMSG = "Immigration Passed";
+                timeInSeconds = 1500;
+                notificationMSG = "Passport control completed";
+                setUI(notificationMSG, timeInSeconds);
                 break;
             case 3:
-                notificationMSG = "bags collected"; //todo add and modify so that the switch matches all the cases
+                timeInSeconds = 1000;
+                notificationMSG = "Bags loaded on seat belt"; //todo add and modify so that the switch matches all the cases
+                setUI(notificationMSG, getEstimate(1200));
         }
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
         notificationBuilder.setSmallIcon(R.drawable.test_not);
         notificationBuilder.setContentTitle("HIA Arrivals Notification"); //todo change this to a suitable title
         notificationBuilder.setContentText(notificationMSG);
         notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
         long[] vibrations = {250,250};
         notificationBuilder.setVibrate(vibrations);
 
@@ -148,18 +162,25 @@ public class UpdateStatusService extends Service {
         Log.wtf(ERROR_SERVICE_MSG,"notified");
     }
 
+    private void setUI(String notificationMSG, int randomNumber) {
+    }
+
     private NotificationManager createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "HIAChannelName";
             String description = "HIAChannelDescription";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
             notificationManager.createNotificationChannel(channel);
             return notificationManager;
         }
         return null;
+    }
+    private int getEstimate(int timeInSeconds){
+        return new Random().nextInt(timeInSeconds+100)+timeInSeconds-100;
+
     }
 }
