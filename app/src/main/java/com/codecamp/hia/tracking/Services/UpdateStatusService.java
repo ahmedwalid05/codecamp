@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -38,13 +39,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class UpdateStatusService extends Service {
     private static final String ERROR_SERVICE_MSG = "error";
     private static final String CHANNEL_ID = "HIA";
     public static final String TAG = "UpdateStatusService";
+    public static final String TIME = "time";
+    public static final String NOTIFICATION_MSG = "notificationMSG";
     private FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
     Intent intent;
+    private TrackingActivity trackingActivity;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
 
 
     @Nullable
@@ -163,6 +170,12 @@ public class UpdateStatusService extends Service {
     }
 
     private void setUI(String notificationMSG, int randomNumber) {
+        Intent intent = new Intent();
+        intent.setAction("com.codecamp.hia.tracking.STATUS_CHANGED");
+        intent.putExtra(TIME,randomNumber);
+        intent.putExtra(NOTIFICATION_MSG,notificationMSG);
+        LocalBroadcastManager lo= LocalBroadcastManager.getInstance(this);
+        lo.sendBroadcast(intent);
     }
 
     private NotificationManager createNotificationChannel() {
