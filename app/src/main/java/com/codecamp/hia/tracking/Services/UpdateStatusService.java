@@ -44,9 +44,13 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import static android.app.Notification.DEFAULT_SOUND;
+import static android.app.Notification.DEFAULT_VIBRATE;
+
 public class UpdateStatusService extends Service {
     private static final String ERROR_SERVICE_MSG = "error";
     private static final String CHANNEL_ID = "HIA";
+    private static NotificationManager notificationManager;
     public static final String TAG = "UpdateStatusService";
     public static final String TIME = "time";
     public static final String NOTIFICATION_MSG = "notificationMSG";
@@ -56,6 +60,7 @@ public class UpdateStatusService extends Service {
     private TrackingActivity trackingActivity;
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
+    long[] vibrations = {250, 250};
 
 
     @Nullable
@@ -71,7 +76,9 @@ public class UpdateStatusService extends Service {
         intentNotifcation.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentNotifcation, 0);
         this.intent = intent;
-        final NotificationManager notificationManager = createNotificationChannel();
+        if(notificationManager ==null) {
+            notificationManager = createNotificationChannel();
+        }
         Log.d(TAG, "onStartCommand: Service started");
         Bundle happyBundle = intent.getExtras();
         if (happyBundle != null) {
@@ -156,18 +163,21 @@ public class UpdateStatusService extends Service {
                 setUI(notificationMSG, getEstimate(1200));
         }
         Bitmap bigPicutre = getBitmap(ContextCompat.getDrawable(getApplicationContext(), R.mipmap.ic_background_air));
-        long[] vibrations = {250, 250};
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID)
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setContentTitle("HIA Arrivals Notification")
                 .setSmallIcon(R.drawable.test_not)
+                .setOnlyAlertOnce(false)
                 .setContentText(notificationMSG)
-//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setVibrate(vibrations)
                 .setContentIntent(pendingIntent)
-                .setFullScreenIntent(pendingIntent, true);
-//                .setDefaults(Notification.DEFAULT_ALL)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setAutoCancel(false)
+                .setFullScreenIntent(pendingIntent, true)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(false);
+
 //                .setStyle(new NotificationCompat.BigTextStyle());
 
         notificationManager.notify(new Random().nextInt(500)+100, notificationBuilder.build());
@@ -202,10 +212,15 @@ public class UpdateStatusService extends Service {
             CharSequence name = "HIAChannelName";
             String description = "HIAChannelDescription";
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setShowBadge(true);
+            channel.setVibrationPattern(vibrations);
+//            channel.setBypassDnd(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
             notificationManager.createNotificationChannel(channel);
             return notificationManager;
