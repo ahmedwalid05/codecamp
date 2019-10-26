@@ -55,7 +55,7 @@ public class UpdateStatusService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Intent intentNotifcation = new Intent(this, TrackingActivity.class);
         intentNotifcation.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentNotifcation, 0);
         this.intent = intent;
         final NotificationManager notificationManager = createNotificationChannel();
         Log.d(TAG, "onStartCommand: Service started");
@@ -141,6 +141,7 @@ public class UpdateStatusService extends Service {
 //        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
 //                R.drawable.test_not);
         notificationBuilder.setContentIntent(pendingIntent);
+        notificationBuilder.setFullScreenIntent(pendingIntent,true);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         notificationBuilder.setAutoCancel(true);
         notificationManager.notify(654, notificationBuilder.build());
