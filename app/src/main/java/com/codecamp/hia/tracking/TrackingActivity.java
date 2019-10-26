@@ -57,20 +57,20 @@ public class TrackingActivity extends AppCompatActivity {
         CircularView.OptionsBuilder builderWithTimer =
                 new CircularView.OptionsBuilder()
                         .shouldDisplayText(true)
-                        .setCounterInSeconds(200)
+                        .setCounterInSeconds(3600)
                         .setCircularViewCallback(new CircularViewCallback() {
                             @Override
                             public void onTimerFinish() {
 
                                 // Will be called if times up of countdown timer
-                                Toast.makeText(TrackingActivity.this, "The Customer has arrived ", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(TrackingActivity.this, "The Customer has arrived ", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onTimerCancelled() {
 
                                 // Will be called if stopTimer is called
-                                Toast.makeText(TrackingActivity.this, "CircularCallback: Timer Cancelled ", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(TrackingActivity.this, "CircularCallback: Timer Cancelled ", Toast.LENGTH_SHORT).show();
                             }
                         });
         circularViewWithTime.setOptions(builderWithTimer);

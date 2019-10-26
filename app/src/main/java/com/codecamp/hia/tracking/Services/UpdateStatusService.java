@@ -158,9 +158,13 @@ public class UpdateStatusService extends Service {
                 setUI(notificationMSG, timeInSeconds);
                 break;
             case 3:
-                timeInSeconds = 1000;
+
                 notificationMSG = "Bags loaded on seat belt"; //todo add and modify so that the switch matches all the cases
-                setUI(notificationMSG, getEstimate(1200));
+                setUI(notificationMSG, getEstimate(1000));
+                break;
+            case 4:
+                notificationMSG = "Passenger on way to exit"; //todo add and modify so that the switch matches all the cases
+                setUI(notificationMSG, getEstimate(120));
         }
         Bitmap bigPicutre = getBitmap(ContextCompat.getDrawable(getApplicationContext(), R.mipmap.ic_background_air));
 
