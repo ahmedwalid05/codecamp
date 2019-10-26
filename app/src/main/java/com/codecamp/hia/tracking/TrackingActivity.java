@@ -64,6 +64,7 @@ public class TrackingActivity extends AppCompatActivity {
 
                                 // Will be called if times up of countdown timer
 //                                Toast.makeText(TrackingActivity.this, "The Customer has arrived ", Toast.LENGTH_SHORT).show();
+                                textView.setText("Passenger Has Arrived");
                             }
 
                             @Override
