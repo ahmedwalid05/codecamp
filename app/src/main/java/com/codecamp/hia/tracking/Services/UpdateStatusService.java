@@ -144,7 +144,7 @@ public class UpdateStatusService extends Service {
         int timeInSeconds = 3600;
         switch (code) {
             case 0:
-                notificationMSG = "Waiting For approval ";
+                notificationMSG = "Request Approved ";
                 setUI(notificationMSG, getEstimate(timeInSeconds));
                 break;
             case 1:
