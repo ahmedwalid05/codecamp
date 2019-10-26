@@ -83,4 +83,10 @@ public class TrackingActivity extends AppCompatActivity {
         circularViewWithTime.startTimer();
         textView.setText(notificationMSG);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
 }
