@@ -140,7 +140,7 @@ public class ApproveRequestActivity extends AppCompatActivity {
             super.onPostExecute(request);
             Log.wtf(TAG, "onPostExecute: ");
             passportImageView.setImageBitmap(request.getPassportPhoto());
-            
+
         }
     }
 
