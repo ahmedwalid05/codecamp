@@ -6,6 +6,7 @@ import ticker.views.com.ticker.widgets.circular.timer.callbacks.CircularViewCall
 import ticker.views.com.ticker.widgets.circular.timer.view.CircularView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +18,11 @@ import android.widget.Toast;
 import com.codecamp.hia.tracking.BroadcastReceiver.HIAReceiver;
 import com.codecamp.hia.tracking.Services.UpdateStatusService;
 
+import com.codecamp.hia.tracking.models.Request;
 import com.google.firebase.firestore.DocumentReference;
+
+import static com.codecamp.hia.tracking.MainActivity.DOCUMENT_REF;
+import static com.codecamp.hia.tracking.MainActivity.PREFRENECES_NAME;
 
 public class TrackingActivity extends AppCompatActivity {
 
@@ -25,6 +30,8 @@ public class TrackingActivity extends AppCompatActivity {
     CircularView circularViewWithTime;
     HIAReceiver receiver;
     TextView textView;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +39,16 @@ public class TrackingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tracking);
         textView = findViewById(R.id.timeRemaning);
         circularViewWithTime = findViewById(R.id.circular_view_with_timer);
+        if (UpdateStatusService.isRunning == false) {
+            preferences = getSharedPreferences(PREFRENECES_NAME, MODE_PRIVATE);
+            editor = preferences.edit();
+            String id = preferences.getString(DOCUMENT_REF, null);
+            Intent intent = new Intent(TrackingActivity.this, UpdateStatusService.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(DOCUMENT_REF, id);
+            intent.putExtras(bundle);
+            startService(intent);
+        }
         receiver = new HIAReceiver();
         IntentFilter intentFilter = new IntentFilter("com.codecamp.hia.tracking.STATUS_CHANGED");
         registerReceiver(receiver,intentFilter);

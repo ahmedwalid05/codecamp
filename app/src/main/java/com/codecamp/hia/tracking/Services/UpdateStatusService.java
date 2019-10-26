@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -39,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class UpdateStatusService extends Service {
@@ -48,6 +51,7 @@ public class UpdateStatusService extends Service {
     public static final String TIME = "time";
     public static final String NOTIFICATION_MSG = "notificationMSG";
     private FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
+    public static boolean isRunning = false;
     Intent intent;
     private TrackingActivity trackingActivity;
     private SharedPreferences preferences;
@@ -62,6 +66,7 @@ public class UpdateStatusService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        isRunning = true;
         Intent intentNotifcation = new Intent(this, TrackingActivity.class);
         intentNotifcation.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentNotifcation, 0);
@@ -152,10 +157,12 @@ public class UpdateStatusService extends Service {
         }
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
         notificationBuilder.setSmallIcon(R.drawable.test_not);
+        Bitmap bigPicutre = getBitmap(ContextCompat.getDrawable(getApplicationContext(),R.mipmap.ic_background_air));
+//        notificationBuilder.setLargeIcon(bigPicutre);
         notificationBuilder.setContentTitle("HIA Arrivals Notification"); //todo change this to a suitable title
         notificationBuilder.setContentText(notificationMSG);
         notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
+
         long[] vibrations = {250,250};
         notificationBuilder.setVibrate(vibrations);
 
@@ -163,7 +170,9 @@ public class UpdateStatusService extends Service {
 //                R.drawable.test_not);
         notificationBuilder.setContentIntent(pendingIntent);
         notificationBuilder.setFullScreenIntent(pendingIntent,true);
+        notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+//        notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bigPicutre));
         notificationBuilder.setAutoCancel(true);
         notificationManager.notify(654, notificationBuilder.build());
         Log.wtf(ERROR_SERVICE_MSG,"notified");
@@ -187,6 +196,7 @@ public class UpdateStatusService extends Service {
             channel.setDescription(description);
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+
             notificationManager.createNotificationChannel(channel);
             return notificationManager;
         }
@@ -195,5 +205,13 @@ public class UpdateStatusService extends Service {
     private int getEstimate(int timeInSeconds){
         return new Random().nextInt(timeInSeconds+100)+timeInSeconds-100;
 
+    }
+    private Bitmap getBitmap(Drawable vectorDrawable) {
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+        return bitmap;
     }
 }

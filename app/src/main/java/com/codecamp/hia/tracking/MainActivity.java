@@ -139,11 +139,11 @@ public class MainActivity extends AppCompatActivity {
                                 public void onSuccess(Void aVoid) {
                                     Log.d(TAG, "DocumentSnapshot successfully written!");
                                     Toast.makeText(MainActivity.this, "Request sent", Toast.LENGTH_LONG).show();
-                                    Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString(DOCUMENT_REF, id);
-                                    intent.putExtras(bundle);
-                                    startService(intent);
+//                                    Intent intent = new Intent(MainActivity.this, UpdateStatusService.class);
+//                                    Bundle bundle = new Bundle();
+//                                    bundle.putString(DOCUMENT_REF, id);
+//                                    intent.putExtras(bundle);
+//                                    startService(intent);
 
                                     editor.putString(Request.TICKET_NUMBER, ticketNumber);
                                     editor.putString(DOCUMENT_REF, id);
