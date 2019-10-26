@@ -155,28 +155,38 @@ public class UpdateStatusService extends Service {
                 notificationMSG = "Bags loaded on seat belt"; //todo add and modify so that the switch matches all the cases
                 setUI(notificationMSG, getEstimate(1200));
         }
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID);
-        notificationBuilder.setSmallIcon(R.drawable.test_not);
-        Bitmap bigPicutre = getBitmap(ContextCompat.getDrawable(getApplicationContext(),R.mipmap.ic_background_air));
-//        notificationBuilder.setLargeIcon(bigPicutre);
-        notificationBuilder.setContentTitle("HIA Arrivals Notification"); //todo change this to a suitable title
-        notificationBuilder.setContentText(notificationMSG);
-        notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        Bitmap bigPicutre = getBitmap(ContextCompat.getDrawable(getApplicationContext(), R.mipmap.ic_background_air));
+        long[] vibrations = {250, 250};
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(UpdateStatusService.this, CHANNEL_ID)
+                .setContentTitle("HIA Arrivals Notification")
+                .setSmallIcon(R.drawable.test_not)
+                .setContentText(notificationMSG)
+//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setVibrate(vibrations)
+                .setContentIntent(pendingIntent)
+                .setFullScreenIntent(pendingIntent, true);
+//                .setDefaults(Notification.DEFAULT_ALL)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setAutoCancel(false)
+//                .setStyle(new NotificationCompat.BigTextStyle());
 
-        long[] vibrations = {250,250};
-        notificationBuilder.setVibrate(vibrations);
-
-//        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
-//                R.drawable.test_not);
-        notificationBuilder.setContentIntent(pendingIntent);
-        notificationBuilder.setFullScreenIntent(pendingIntent,true);
-        notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
-        notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-//        notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bigPicutre));
-        notificationBuilder.setAutoCancel(true);
-        notificationManager.notify(654, notificationBuilder.build());
-        Log.wtf(ERROR_SERVICE_MSG,"notified");
+        notificationManager.notify(new Random().nextInt(500)+100, notificationBuilder.build());
+        Log.wtf(ERROR_SERVICE_MSG, "notified");
     }
+    //        notificationBuilder.setLargeIcon(bigPicutre);
+//        notificationBuilder; //todo change this to a suitable title
+
+//
+//        notificationBuilder.setVibrate(vibrations);
+//
+////        Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
+////                R.drawable.test_not);
+//        notificationBuilder.setContentIntent(pendingIntent);
+//        notificationBuilder.setFullScreenIntent(pendingIntent, true);
+//        notificationBuilder.setDefaults(Notification.DEFAULT_ALL);
+//        notificationBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+////        notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bigPicutre));
+//        notificationBuilder.setAutoCancel(true);
 
     private void setUI(String notificationMSG, int randomNumber) {
         Intent intent = new Intent();
@@ -191,10 +201,10 @@ public class UpdateStatusService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "HIAChannelName";
             String description = "HIAChannelDescription";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
 
             notificationManager.createNotificationChannel(channel);
@@ -202,10 +212,12 @@ public class UpdateStatusService extends Service {
         }
         return null;
     }
-    private int getEstimate(int timeInSeconds){
-        return new Random().nextInt(timeInSeconds+100)+timeInSeconds-100;
+
+    private int getEstimate(int timeInSeconds) {
+        return new Random().nextInt(timeInSeconds + 100) + timeInSeconds - 100;
 
     }
+
     private Bitmap getBitmap(Drawable vectorDrawable) {
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
                 vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
